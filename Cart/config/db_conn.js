@@ -1,31 +1,14 @@
-const mongoose = require('mongoose');
-const redis = require('redis');
-require('dotenv').config();
+const mongoose = require("mongoose");
+require("dotenv").config();
 
-const redisClient = redis.createClient();
+const mongoHost = process.env.MONGO_HOST || "mongo";
+const mongoPort = process.env.MONGO_PORT || "27017";
+const mongoDb   = process.env.MONGO_DBNAME;
 
-// --------------------
-// MongoDB (LOCAL)
-// --------------------
+const mongoURL = `mongodb://${mongoHost}:${mongoPort}/${mongoDb}`;
 
-// We will use a single env variable for local Mongo
-// Example: mongodb://mongo:27017/ecommerce
-const mongoUrl = process.env.MONGO_URL;
-
-if (!mongoUrl) {
-  console.error("MONGO_URL is not defined");
-  process.exit(1);
-}
-
-mongoose
-  .connect(mongoUrl, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => console.log("Connected to Local MongoDB"))
-  .catch((err) => {
-    console.error("MongoDB connection error:", err);
-    process.exit(1);
-  });
+mongoose.connect(mongoURL)
+  .then(() => console.log(`MongoDB connected to DB: ${mongoDb}`))
+  .catch(err => console.error("Mongo connection error:", err));
 
 module.exports = mongoose;
